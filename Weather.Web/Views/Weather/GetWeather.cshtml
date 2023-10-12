@@ -1,0 +1,248 @@
+﻿@using Newtonsoft.Json
+@using WeatherResponse = Weather.Web.Models.WeatherResponse
+@using System.Globalization
+@model List<Weather.Web.Models.WeatherResponse>
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
+    List<float> temperatureData = new List<float>();
+    var dewpointData = new List<float>();
+    var heatingIndexData = new List<float>();
+    // Get the serialized JSON data from TempData
+    string? serializedData = TempData["WeatherData"] as string;
+    var myWeather = TempData["SeasonImage"] as string;
+    // Deserialize the JSON data if it's not null
+    List<WeatherResponse>? weatherResponses = null;
+    if (!string.IsNullOrEmpty(serializedData))
+    {
+        weatherResponses = JsonConvert.DeserializeObject<List<WeatherResponse>>(serializedData);
+    }
+    
+}
+<div class="container-fluid">
+<div id="current-conditions" class="panel panel-default">
+    <div id="getForecast">
+    <form asp-controller="Weather" asp-action="GetWeather" method="get" class="form-inline">
+            <div id="getfcst-body">
+                <input name="city" type="text" id="cityInput" class="form-control" placeholder="Enter city name" />
+                <button class="btn btn-primary" type="submit">Go</button>
+            </div>
+    </form>
+     </div>
+
+        <br />
+        @if (weatherResponses != null)
+        {
+            @if (weatherResponses.Count > 0)
+            {
+                <!-- current Conditions header row -->
+                <div class="panel-heading">
+                    <div>
+                        <b>current conditions at</b>
+                        <h2 class="panel-title">Weather Forecast for @weatherResponses[0].location.Name, @weatherResponses[0].location.Country </h2>
+                        <span class="smallTxt"><b>Lat:&nbsp;</b>@weatherResponses[0].location.Lat<b>Lon:&nbsp;</b>@weatherResponses[0].location.Lon.</span>
+                    </div>
+                </div>
+
+
+                @foreach (var data in weatherResponses)
+                {
+                    <div class="container" style="display: flex;">
+                        <div class="row" style="display: flex;justify-content: space-between;">
+
+                            <div class="col-md-5" style="display: flex; align-items:center;">
+                                <div class="panel-body" id="current-conditions-body">
+                                    <div id="current_conditions-summary" class="float-start">
+                                        <img src="@data.current.condition.Icon" class="float-start iconimg">
+                                        <p class="myforecast-current-sm">@data.current.condition.Text</p>
+                                        <p class="myforecast-current-sm">@data.current.temp_c °C</p>
+                                        <p class="myforecast-current-sm">@data.current.temp_f °F</p>
+                                        <p class="feels-like">Feels like: @data.current.feelslike_c °C (@data.current.feelslike_f °F)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-3">
+                                <div class="panel-body" id="current-conditions-body">
+                                    <div id="current_conditions_detail" class="float-start">
+                                        <div class="col-sm-4">
+                                            <div class="weather-item">
+                                                <div class="weather-label">Humidity</div>
+                                                <div class="weather-value">@data.current.humidity%</div>
+                                            </div>
+                                            <div class="weather-item">
+                                                <div class="weather-label">Wind Speed</div>
+                                                <div class="weather-value">@data.current.wind_dir @data.current.wind_kph km/h</div>
+                                            </div>
+                                            <div class="weather-item">
+                                                <div class="weather-label">Barometer</div>
+                                                <div class="weather-value">@data.current.pressure_mb mb (@data.current.pressure_in in)</div>
+                                            </div>
+                                            @foreach (var f in data.forecast.Forecastday)
+                                            {
+                                                foreach (var t in f.hour)
+                                                {
+                                                    <div class="weather-item">
+                                                        <div class="weather-label">Dewpoint</div>
+                                                        <div class="weather-value">@t.dewpoint_c °C (@t.dewpoint_f °F)</div>
+                                                    </div>
+                                                    break;
+                                                }
+                                                break;
+                                            }
+
+                                            <div class="weather-item">
+                                                <div class="weather-label">Visibility</div>
+                                                <div class="weather-value">@data.current.vis_km km</div>
+                                            </div>
+                                            <div class="weather-item">
+                                                <div class="weather-label">Last update</div>
+                                                @if (DateTime.TryParseExact(data.current.last_updated, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                                                {
+                                                    <div class="weather-value">@dt.ToString("dd-MM-yyyy HH:mm")</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="panel-body" id="current-conditions-body">
+                                    <div id="current_conditions_detail" class="float-start">
+                                        <img src="@myWeather" asp-append-version="true" style="margin-left: 3px;" alt="Picture" width="250px" height="150px;">
+                                    </div>
+                                </div>
+                            </div>
+                                        <!-- Add more columns here if needed -->
+                                    </div>
+                    </div>
+
+                    <div id="seven-day-forecast" class="panel panel-default">
+                        <div class="panel-heading">
+                            <b>Extended Forecast for</b>
+                            <h2 class="panel-title">
+                                @data.location.Name, Time Zone: @data.location.TzId
+                            </h2>
+                        </div>
+                        <div id="seven-day-forecast" class="panel panel-default">
+                            <div class="panel-heading">
+                            </div>
+                            <div class="panel-body" id="seven-day-forecast-body">
+                                <div id="seven-day-forecast-container">
+                                    <ul id="seven-day-forecast-list" class="list-unstyled">
+                                        @foreach (var f in data.forecast.Forecastday)
+                                        {
+                                            foreach (var h in f.hour)
+                                            {
+                                                temperatureData.Add((float)h.temp_c);
+                                                dewpointData.Add((float)h.dewpoint_c);
+                                                heatingIndexData.Add((float)h.heatindex_c);
+                                            }
+                                            <li class="forecast-tombstone">
+                                                <div class="tombstone-container">
+                                                    @if (DateTime.TryParseExact(f.date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var da))
+                                                    {
+                                                        <p class="period-name">@da.ToString("dd-MM-yyyy")<br><br></p>
+                                                    }
+                                                    <p><img src="@f.day.condition.Icon" alt="@f.date: @f.day.condition.Text, Temperature high near @f.day.maxtemp_c °C. Wind @f.day.maxwind_kph kph. " title="@f.day.condition.Text, with a high near @f.day.maxtemp_c °C.  Wind @f.day.maxwind_kph kph." class="forecast-icon"></p>
+                                                    <p class="short-desc" style="height: 54px;">@f.day.condition.Text</p>
+                                                    <p class="temp temp-high">High: @f.day.maxtemp_c °C</p>
+                                                    <p class="temp temp-low">Low: @f.day.mintemp_c °C</p>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-heading">
+                            <h3 class="chart-title mb-5">Hourly Weather Forecast Graph for @data.location.Name</h3>
+                        </div>
+                            <div class="chart-graph">
+                                <canvas id="weatherChart"></canvas>
+                        
+                        </div>
+                    </div>
+
+                }
+
+            }
+            else
+            {
+                <div id="txtError">
+                    <div id="errorNoResults">Sorry, the location you searched for was not found. Please try another search string.</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div id="txtError">
+                <div id="errorNoResults">Sorry, the location you searched for was not found. Please try another search string.</div>
+            </div>
+        }
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const temperatureDataArray = @Html.Raw(Json.Serialize(temperatureData));
+    const dewpointDataArray = @Html.Raw(Json.Serialize(dewpointData));
+    const heatingIndexDataArray = @Html.Raw(Json.Serialize(heatingIndexData));
+    const weatherChartCanvas = document.getElementById('weatherChart');
+
+
+    const weatherChart = new Chart(weatherChartCanvas, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 24 }, (_, i) => i),
+            //labels: hourNumbersArray,
+            datasets: [
+                {
+                    label: 'Temperature (°C)',
+                    data: temperatureDataArray,
+                    borderColor: 'blue',
+                    fill: false
+                },
+                {
+                    label: 'Dewpoint (°C)',
+                    data: dewpointDataArray,
+                    borderColor: 'green',
+                    fill: false
+                },
+                {
+                    label: 'Heating Index (°C)',
+                    data: heatingIndexDataArray,
+                    borderColor: 'red',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Hour of the Day'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    }
+                }
+            },
+            plugins: {
+                datalabels: {
+                    align: 'top',
+                    formatter: (value) => `${value} °C`, // Display the value with °C suffix
+                    display: true,
+                }
+            }
+        }
+    });
+</script>
+

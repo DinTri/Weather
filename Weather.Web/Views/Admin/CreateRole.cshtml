@@ -1,0 +1,31 @@
+﻿@using Weather.Web.Administration.ViewModels
+@model Weather.Web.Administration.ViewModels.CreateRoleViewModel
+
+@{
+    ViewData["Title"] = "Create Role";
+    Layout = "_Layout";
+}
+
+<h1>Create Role</h1>
+
+@if (TempData["RoleData"] is CreateRoleViewModel roleData)
+{
+    <div class="alert alert-success">
+        Role "@roleData.Name" created successfully!
+    </div>
+}
+
+<form asp-action="CreateRole" method="post" class="mt-3">
+    @Html.AntiForgeryToken()
+    <!-- Other form fields -->
+    <div class="form-group">
+        <label for="Name">Role Name</label>
+        <input type="text" id="Name" name="Name" class="form-control"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Role</button>
+</form>
+
+<div>
+    @Html.ActionLink("Back to List", "ListAllRoles")
+</div>
+

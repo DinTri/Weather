@@ -1,0 +1,78 @@
+﻿@* @model List<Weather.Web.Administration.ApplicationUser> *@
+@using Newtonsoft.Json
+@using Weather.Web.Administration.ViewModels
+@model List<Weather.Web.Administration.ViewModels.UserResponse>
+@{
+    ViewData["Title"] = "List of Users";
+    Layout = "_Layout";
+
+    // Retrieve the serialized JSON data from TempData
+    string? serializedData = TempData["UserData"] as string;
+
+    // Deserialize the JSON data if it's not null
+    List<UserResponse>? users = null;
+    if (!string.IsNullOrEmpty(serializedData))
+    {
+        users = JsonConvert.DeserializeObject<List<UserResponse>>(serializedData);
+    }
+}
+@{
+    ViewData["Title"] = "List of Users";
+}
+
+<h1 class="users-list">Users List</h1>
+@if (users != null)
+{
+
+    @foreach (var user in users)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                User Id: @user.Id
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    @* <div class="card-body"> *@
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">@user.UserName</h5>
+                            <div>
+                                <a asp-action="EditUser" asp-controller="Admin" asp-route-id="@user.Id" class="btn btn-primary mr-2">Edit</a>
+                                <a href="#" class="btn btn-danger"
+                                   onclick="confirmDelete('@user.Id', true)">Delete</a>
+                            </div>
+                        </div>
+                   @*  </div> *@
+                </div>
+            </div>
+            <div class="card-footer" id="confirmDeleteSpan_@user.Id" style="display:none">
+                <span style="color: #ff1493">Are you sure you want to delete?</span>
+                <form method="post" asp-action="DeleteUser" asp-route-id="@user.Id">
+                    <button type="submit" class="btn btn-danger">Yes</button>
+                    <a href="#" class="btn btn-primary"
+                       onclick="confirmDelete('@user.Id', false)">No</a>
+                </form>
+            </div>
+        </div>
+    }
+
+
+}
+
+<script>
+    function confirmDelete(uniqueId, isDeleteClicked) {
+        var deleteSpan = 'deleteSpan_' + uniqueId;
+        var confirmDeleteSpan = 'confirmDeleteSpan_' + uniqueId;
+
+        if (isDeleteClicked) {
+            $('#' + deleteSpan).hide();
+            $('#' + confirmDeleteSpan).show();
+            // Disable other buttons
+            $('button[id^="confirmYesButton_"]').prop('disabled', true);
+        } else {
+            $('#' + deleteSpan).show();
+            $('#' + confirmDeleteSpan).hide();
+            // Enable other buttons
+            $('button[id^="confirmYesButton_"]').prop('disabled', false);
+        }
+    }
+</script>

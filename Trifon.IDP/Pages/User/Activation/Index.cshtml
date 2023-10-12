@@ -1,0 +1,12 @@
+﻿@page
+@model Trifon.IDP.Pages.User.Activation.IndexModel
+@{
+
+    <div class="row">
+        <h3>@Model.Input.Message</h3>
+        <br>
+        <!-- Link button to navigate to the login page -->
+        <a href="@Html.Raw(ViewData["LoginPageUrl"])" class="btn btn-primary">Go to Login Page</a>
+
+    </div>
+}

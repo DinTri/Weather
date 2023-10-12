@@ -1,0 +1,8 @@
+[2023-09-25 01:08:05 INF] Role 'FuckVeli' created successfully.
+[2023-09-25 01:35:52 INF] Role 'FuckVeli' deleted successfully.
+[2023-09-25 10:54:15 INF] Role 'TestRole' created successfully.
+[2023-09-25 13:02:02 INF] Role 'test' created successfully.
+[2023-09-25 13:06:31 INF] Role 'test1' created successfully.
+[2023-09-25 13:30:47 INF] Role 'TrifFuckVeli' created successfully.
+[2023-09-25 13:32:53 INF] Role 'Trifon will fuck Lincheto' created successfully.
+[2023-09-25 13:36:29 INF] Role 'Trifon will fuck Lincheto' created successfully.

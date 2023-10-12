@@ -1,0 +1,21 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "AccessDenied";
+    Layout = "_Layout";
+}
+<br />
+
+<div class="text-center">
+    <h1 class="text-danger">Access Denied</h1>
+    <h3>Woops, looks like you don't have permission to view this page.</h3>
+    <h3>Would you preffer to <a asp-controller="Authentication" asp-action="Logout">log in as someone else</a>?</h3>
+    <img src="~/images/access-denied.jpg" alt="access-denied" />
+</div>
+    <div>
+        
+    </div>
+
+@{
+    ViewBag.Title = "AccessDenied";
+}

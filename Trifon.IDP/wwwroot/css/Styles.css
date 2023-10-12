@@ -1,0 +1,12 @@
+﻿/* Apply bold font-weight to selected countries */
+.bold-country {
+    font-weight: bold;
+}
+
+/* Add a dashed border-top for the separator */
+.separator {
+    border-top: 1px dashed #000;
+}
+.font-weight-bold {
+    font-weight: bold;
+}

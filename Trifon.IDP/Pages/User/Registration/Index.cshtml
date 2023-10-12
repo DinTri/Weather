@@ -1,0 +1,94 @@
+﻿@page
+@model Trifon.IDP.Pages.User.Registration.IndexModel
+
+@{
+    var orderedCountries = TempData["OrderedCountries"] as List<Trifon.IDP.Entities.Country>;
+}
+<div>
+    <partial name="_ValidationSummary" />
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">User Registration</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="post">
+                        <!-- Specify post method -->
+                        <input type="hidden" asp-for="Input.ReturnUrl" />
+                        <fieldset>
+                            <div class="form-group">
+                                <label asp-for="Input.UserName"></label>
+                                <input class="form-control" placeholder="Username" asp-for="Input.UserName" autofocus required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.Password"></label>
+                                <input type="password" class="form-control" placeholder="Password"
+                                       asp-for="Input.Password" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.ConfirmPassword"></label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control" type="password" placeholder="Confirm Password" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.Email"></label>
+                                <input class="form-control" placeholder="Email" asp-for="Input.Email" required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.GivenName"></label>
+                                <input class="form-control" placeholder="Given name" asp-for="Input.GivenName" required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.FamilyName"></label>
+                                <input class="form-control" placeholder="Family name" asp-for="Input.FamilyName" required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.Country"></label>
+                                <select class="form-control" asp-for="Input.Country" required>
+                                    <option value="">Please, select country</option>
+                                    @{
+                                        var chosenCountryIsoCodes = new List<string> { "US", "GB", "CA", "BG", "DE", "FR", "ES", "IT", "TR" };
+                                    }
+
+                                    @foreach (var isoCode in chosenCountryIsoCodes)
+                                    {
+                                        if (orderedCountries == null)
+                                        {
+                                            continue;
+                                        }
+                                        var country = orderedCountries.FirstOrDefault(c => c.Iso == isoCode);
+                                        if (country != null)
+                                        {
+                                            <option value="@country.Iso">@country.Name</option>
+                                        }
+                                    }
+
+                                        <option disabled="disabled">---------------------------</option>
+
+                                    @if (orderedCountries != null)
+                                    {
+                                        foreach (var country in orderedCountries)
+                                        {
+                                            if (chosenCountryIsoCodes.Contains(country.Iso))
+                                            {
+                                                continue;
+                                            }
+                                            var country1 = country;
+                                            <option value="@country.Iso">@country1.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
